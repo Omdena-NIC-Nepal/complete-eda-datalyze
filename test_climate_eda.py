@@ -10,45 +10,45 @@ class TestClimateEDA(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Load the notebook
-        with open('climate_eda.ipynb', 'r', encoding='utf-8') as f:
+        with open("climate_eda.ipynb", "r", encoding="utf-8") as f:
             cls.notebook = nbformat.read(f, as_version=4)
         
         # Execute the notebook
-        ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-        ep.preprocess(cls.notebook, {'metadata': {'path': '.'}})
+        ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
+        ep.preprocess(cls.notebook, {"metadata": {"path": "."}})
         
         # Extract code and markdown cells
-        cls.code_cells = [cell for cell in cls.notebook.cells if cell['cell_type'] == 'code']
-        cls.markdown_cells = [cell for cell in cls.notebook.cells if cell['cell_type'] == 'markdown']
-        cls.all_code = '\n'.join([cell['source'] for cell in cls.code_cells])
-        cls.all_markdown = '\n'.join([cell['source'] for cell in cls.markdown_cells])
+        cls.code_cells = [cell for cell in cls.notebook.cells if cell["cell_type"] == "code"]
+        cls.markdown_cells = [cell for cell in cls.notebook.cells if cell["cell_type"] == "markdown"]
+        cls.all_code = "\n".join([cell["source"] for cell in cls.code_cells])
+        cls.all_markdown = "\n".join([cell["source"] for cell in cls.markdown_cells])
         
         # Check if data was loaded properly
         for cell in cls.code_cells:
-            if 'df = pd.read_csv' in cell['source']:
+            if "df = pd.read_csv" in cell["source"]:
                 # Get variable name of dataframe
-                match = re.search(r'(\w+)\s*=\s*pd\.read_csv', cell['source'])
+                match = re.search(r"(\w+)\s*=\s*pd\.read_csv", cell["source"])
                 if match:
                     cls.df_name = match.group(1)
                     break
         
     def test_required_libraries(self):
         """Test that all required libraries are imported"""
-        required_libs = ['pandas', 'numpy', 'matplotlib', 'seaborn']
+        required_libs = ["pandas", "numpy", "matplotlib", "seaborn"]
         for lib in required_libs:
             self.assertIn(f"import {lib}", self.all_code, f"Missing required import for {lib}")
             
     def test_data_loading(self):
         """Test that climate data is loaded"""
-        self.assertIn("read_csv('data/Climate_Change_Indicators.csv')", self.all_code, "Data file not loaded correctly")
+        self.assertIn("read_csv("data/Climate_Change_Indicators.csv")", self.all_code, "Data file not loaded correctly")
         
     def test_yearly_aggregation(self):
         """Test that data is aggregated by year"""
         # Look for groupby operations on year
         yearly_agg_patterns = [
-            r"groupby\(\s*['\"]Year['\"]\s*\)",
-            r"groupby\(\s*['\"]\w+['\"]\s*\)\[['\"]\w+['\"]",
-            r"resample\(\s*['\"]Y['\"]\s*\)"
+            r"groupby\(\s*["\"]Year["\"]\s*\)",
+            r"groupby\(\s*["\"]\w+["\"]\s*\)\[["\"]\w+["\"]",
+            r"resample\(\s*["\"]Y["\"]\s*\)"
         ]
         found_yearly_agg = any(re.search(pattern, self.all_code) for pattern in yearly_agg_patterns)
         self.assertTrue(found_yearly_agg, "No evidence of yearly data aggregation")
@@ -127,14 +127,14 @@ class TestClimateEDA(unittest.TestCase):
         
     def test_climate_variables_analyzed(self):
         """Test that all climate variables are analyzed"""
-        climate_vars = ['Global Average Temperature (°C)', 'CO2 Concentration (ppm)', 'Sea Level Rise (mm)', 'Arctic Ice Area (million km²)']
+        climate_vars = ["Global Average Temperature (°C)", "CO2 Concentration (ppm)", "Sea Level Rise (mm)", "Arctic Ice Area (million km²)"]
         for var in climate_vars:
             self.assertIn(var, self.all_code, f"Climate variable {var} not analyzed")
 
     def calculate_grade(self):
         """Calculate the grade based on passing tests"""
         # List of all test methods
-        test_methods = [method for method in dir(self) if method.startswith('test_')]
+        test_methods = [method for method in dir(self) if method.startswith("test_")]
         total_tests = len(test_methods)
         
         # Run all tests and count passed tests
@@ -150,7 +150,7 @@ class TestClimateEDA(unittest.TestCase):
         grade = (passed_tests / total_tests) * 100
         return round(grade)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_suite = unittest.TestLoader().loadTestsFromTestCase(TestClimateEDA)
     test_runner = unittest.TextTestRunner(verbosity=2)
     test_result = test_runner.run(test_suite)
