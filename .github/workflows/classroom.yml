@@ -26,6 +26,7 @@ jobs:
     - name: Run tests and calculate grade
       run: |
         # Generate climate data
+        jupyter nbconvert --to script climate_eda.ipynb --output climate_data
         python climate_data.py
         
         # Run tests
