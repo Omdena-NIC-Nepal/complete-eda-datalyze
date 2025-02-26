@@ -15,19 +15,19 @@ class TestClimateEDA(unittest.TestCase):
         
         # Execute the notebook
         ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
-        ep.preprocess(cls.notebook, {'metadata': {'path': '.'}})
+        ep.preprocess(cls.notebook, {"metadata": {"path": "."}})
         
         # Extract code and markdown cells
-        cls.code_cells = [cell for cell in cls.notebook.cells if cell['cell_type'] == 'code']
-        cls.markdown_cells = [cell for cell in cls.notebook.cells if cell['cell_type'] == 'markdown']
-        cls.all_code = '\n'.join([cell['source'] for cell in cls.code_cells])
-        cls.all_markdown = '\n'.join([cell['source'] for cell in cls.markdown_cells])
+        cls.code_cells = [cell for cell in cls.notebook.cells if cell["cell_type"] == "code"]
+        cls.markdown_cells = [cell for cell in cls.notebook.cells if cell["cell_type"] == "markdown"]
+        cls.all_code = "\n".join([cell["source"] for cell in cls.code_cells])
+        cls.all_markdown = "\n".join([cell["source"] for cell in cls.markdown_cells])
         
         # Check if data was loaded properly
         for cell in cls.code_cells:
-            if 'df = pd.read_csv' in cell['source']:
+            if "df = pd.read_csv" in cell["source"]:
                 # Get variable name of dataframe
-                match = re.search(r'(\w+)\s*=\s*pd\.read_csv', cell['source'])
+                match = re.search(r"(\w+)\s*=\s*pd\.read_csv", cell["source"])
                 if match:
                     cls.df_name = match.group(1)
                     break
