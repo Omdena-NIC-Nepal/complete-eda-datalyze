@@ -132,6 +132,10 @@ class TestClimateEDA(unittest.TestCase):
             self.assertIn(var, self.all_code, f"Climate variable {var} not analyzed")
 
     def calculate_grade(self):
+        # correction AttributeError: 'TestClimateEDA' object has no attribute 'all_code' from internet
+        if not hasattr(self, "all_code"):
+            self.setUpClass()
+
         """Calculate the grade based on passing tests"""
         # List of all test methods
         test_methods = [method for method in dir(self) if method.startswith('test_')]
